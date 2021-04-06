@@ -1,9 +1,4 @@
 /***************************************************
-Neal Archival
-CS 211
-March 30, 2021
-cipher.cpp homeworl
-
 This progarm is going to read a sentence from a file
 and then cipher the sentence and then decipher the 
 vector of characters
@@ -12,8 +7,7 @@ vector of characters
 #include <string> // string
 #include <fstream> // ifstream read from file
 
-#include "myVector.h" // vector class
-#include "checkInput.h" // getData() function
+#include "myVector.h" // implemented vector class
 
 std::string readFromFile();
 bool isLetterDigit(char ch);
@@ -23,6 +17,7 @@ void decipher(MyVector<char> &vec, std::string sentence);
 char myToLower(char);
 void printVector(MyVector<char> &vec);
 bool operator==(MyVector<char> &v1,MyVector<char> &v2);
+int getData(int minimum, int maximum, std::string message);
 
 int main() {
     MyVector<char> vec; // our vector of characters
@@ -53,12 +48,7 @@ int main() {
     printVector(vec);
     return 0;
 }
-/*************************************
-This function is going to read from
-the cipher file. It will ask user 
-to enter a filename to read and return
-the sentence as a string
-*************************************/
+
 std::string readFromFile() {
     std::ifstream cipherFile; // ifstream file
     std::string filename, sentence; // string that will hold the filename and 
@@ -70,27 +60,17 @@ std::string readFromFile() {
                                    // the user to enter the filename again
         std::cout << "File not found. Enter again: ";
         std::cin >> filename;
-        cipherFile.open(filename.c_str()); // convert to c_str
+        cipherFile.open(filename.c_str()); // convert because of cstring parameter
     }
     getline(cipherFile, sentence); // getline to read from the file so we can include spaces
-    return sentence; // return the sentence
+    return sentence; 
 }
-/*******************************************
-This function is going to iterate the vector
-and print out all its data
-vec is the vector of characters
-********************************************/
+
 void printVector(MyVector<char> &vec) {
-    for(int i = 0; i < vec.size(); i++) std::cout << vec[i];
+    for(int i = 0; i < vec.size(); i++) std::cout << vec[i]; // iterate and output every character of the vector
     std::cout << std::endl;
 }
-/*************************************
-Bool function will return either true 
-or false if the character is equal to
-or in between the ascii values of 
-letters and digits
-char ch - character to be read
-*************************************/
+
 bool isLetterDigit(char ch) { 
     if(ch >= 48 && ch <= 57) return true; // check digit if ch is in between 48 57 on ascii table
     else if(ch >= 65 && ch <= 90) return true; // check capital letter
@@ -110,15 +90,6 @@ bool isDigit(char ch) {
                                           // they are ascii number of digits
     return false; // if not return false
 }
-
-/*************************************
-This function is going to cipher by
-iterating through the vector of chars
-and shift it using a wrap around 
-algorithm.
-
-vec is vector of characters
-*************************************/
 void cipher(MyVector<char> &vec) {
     int shift, ctr = 0; // shift is the user input number which will shift the ascii value of the character if ascii value > 127
                         // counter is used to add a space for every 5 characters
@@ -217,7 +188,7 @@ void decipher(MyVector<char> &vec, std::string sentence) {
             }
             else { // if not digit (lowercase char)
             // no need for int since we are not going to exceed 127
-                vecUnciphered[i] -= shift; // initial subsaction
+                vecUnciphered[i] -= shift; // initial subtraction
                 while(vecUnciphered[i] < 97) vecUnciphered[i] = 123 - (97 % vecUnciphered[i]); // while character is not lowercase, continue getting remainder and wrapping around
             }
         }
@@ -233,12 +204,21 @@ Overloaded function used to compare
 two MyVector objects will return if
 all characters are the same, false
 if one is not
-
-v1 first vector object (left side)
-v2 second vector object (right side)
 *************************************/
 bool operator==(MyVector<char> &v1, MyVector<char> &v2) {
     if(v1.size() != v2.size()) return false; // if the sizes are not the same, then the vectors aren't the same
-    for(int i = 0; i < v1.size(); i++) if(v1[i] != v2[i]) return false; // if one character is not equal, then they are not equal
+    for(int i = 0; i < v1.size(); i++) if(v1[i] != v2[i]) return false; // if one character is not equal, vectors are != 
     return true; // if we go through the entire loop with no returns, then they are the same
 }
+
+int getData(int minimum, int maximum, std::string message) {
+    int userInput; // integer to be returned
+    std::cout << "Enter a number: ";
+    std::cin >> userInput;
+    while(std::cin.fail() || userInput < minimum || userInput > maximum) {
+        std::cin.clear(); std::cin.ignore(); // clear and ignore the istream buffer to avoid infinite loop
+        std::cout << message;
+        std::cin >> userInput;
+    }
+    return userInput;
+} 
